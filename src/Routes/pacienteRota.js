@@ -2,9 +2,47 @@ const { Router, request } = require('express');
 const pacienteServico = require('../Services/pacienteService.js');
 const autenticacaoJWT = require('../Services/authService.js');
 const { validate } = require('../Validations/validations.js');
-const { PacienteValidationRules } = require('../Validations/pacienteValidations.js');
+const { PacienteValidationRules, PacienteCadastroRules } = require('../Validations/pacienteValidations.js');
 
 const routes = Router();
+
+//Metodo para login
+//ok
+routes.post(
+  "/Login", async (request, response) => {
+    const { email, senha } = request.body;
+
+    const Login = {
+      email,
+      senha
+    };
+
+    const pacienteRetorno = await pacienteServico.buscaPacientePorEmail(email);
+
+    if (pacienteRetorno != null && pacienteRetorno.length != 0 && pacienteRetorno.email == Login.email && pacienteRetorno.senha == Login.senha) {
+      return response.status(200).json({ "auth": true, pacienteRetorno });
+    }
+    return response.status(401).json({ ERROR: "Login incorreto" });
+  }
+);
+
+//Metodo para cadastro inicial
+//ok
+routes.post(
+  "/Cadastro",
+  PacienteCadastroRules(),
+  validate,
+  async (request, response) => {
+    const { nome, email, senha } = request.body;
+    const novoUsuario = { nome, email, senha };
+    const usuarioRetorno = await pacienteServico.cadastraUsuario(novoUsuario);
+    if (usuarioRetorno == null) {
+      return response.status(500).json({ "error": "Email ja cadastrado" })
+    }
+    return response.status(201).json({ "auth": true, usuarioRetorno });
+  }
+);
+
 
 routes.get("/", async (request, response) => {
   const pacienteRetorno = await pacienteServico.buscaPaciente();
@@ -27,11 +65,11 @@ routes.post(
   validate,
   async (request, response) => {
     const {
-      nome,cpf,altura,peso,imc,classificacao,dataNascimento,cidade,UF,listaComorbidades,JaTeveCovid,email,senha,
+      nome, cpf, altura, peso, imc, classificacao, dataNascimento, cidade, UF, listaComorbidades, JaTeveCovid, email, senha,
     } = request.body;
 
     const novoPaciente = {
-      nome,cpf,altura,peso,imc,classificacao,dataNascimento,cidade,UF,listaComorbidades,JaTeveCovid,email,senha,
+      nome, cpf, altura, peso, imc, classificacao, dataNascimento, cidade, UF, listaComorbidades, JaTeveCovid, email, senha,
     };
     const pacienteRetorno = await pacienteServico.inserePaciente(novoPaciente);
     if (pacienteRetorno === null) {
@@ -46,10 +84,10 @@ routes.post(
 routes.put("/:cpf", async (request, response) => {
   const { cpf } = request.params;
   const {
-    nome,altura,peso,dataNascimento,cidade,UF,listaComorbidades,JaTeveCovid,
+    nome, altura, peso, dataNascimento, cidade, UF, listaComorbidades, JaTeveCovid,
   } = request.body;
   const pacienteAtualizar = {
-    nome,cpf,nome,altura,peso,dataNascimento,cidade,UF,listaComorbidades,JaTeveCovid,email,senha,
+    nome, cpf, nome, altura, peso, dataNascimento, cidade, UF, listaComorbidades, JaTeveCovid, email, senha,
   };
   const pacienteRetorno = await pacienteServico.atualizaPaciente(
     pacienteAtualizar

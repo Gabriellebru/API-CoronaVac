@@ -1,5 +1,22 @@
 const pacienteRepositorio = require('../Data/pacienteRepositorio.js');
-const calculadoraImc = require ('../util/imc');
+const calculadoraImc = require('../util/imc');
+
+//ok
+module.exports.buscaPacientePorEmail = async function (email) {
+  return await pacienteRepositorio.buscaPacientePorEmail(email);
+};
+
+
+module.exports.cadastraUsuario = async function (novoUsuario) {
+  const usuarioRetorno = await pacienteRepositorio.buscaPacientePorEmail(novoUsuario.email);
+  if (!usuarioRetorno) {
+    return pacienteRepositorio.insereUsuario(novoUsuario);
+  }
+  return null
+};
+
+
+//#region Antigo
 
 module.exports.buscaPaciente = async function () {
   return pacienteRepositorio.buscaPaciente();
@@ -48,10 +65,8 @@ module.exports.removePaciente = async function (cpf) {
   return true;
 };
 
-module.exports.buscaPacientePorEmail = async function (email) {
-  return await pacienteRepositorio.buscaPacientePorEmail(email);
-};
-
 module.exports.verificaEmailSenha = function (email, senha) {
   return pacienteRepositorio.verificaEmailSenha(email, senha);
 };
+
+//#endregion Antigo
