@@ -14,7 +14,8 @@
     "uuidv4": "^6.2.7"
   },
   "scripts": {
-    "start": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "nodemon": "nodemon src/index.js",
     "test": "jest"
   },
   "devDependencies": {
