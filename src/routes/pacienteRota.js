@@ -1,8 +1,8 @@
 const { Router, request } = require('express');
-const pacienteServico = require('../Services/pacienteService.js');
-const autenticacaoJWT = require('../Services/authService.js');
-const { validate } = require('../Validations/validations.js');
-const { PacienteValidationRules, PacienteCadastroRules } = require('../Validations/pacienteValidations.js');
+const pacienteServico = require('../services/pacienteService.js');
+const autenticacaoJWT = require('../services/authService.js');
+const { validate } = require('../validations/validations.js');
+const { PacienteValidationRules, PacienteCadastroRules } = require('../validations/pacienteValidations.js');
 
 const routes = Router();
 

@@ -1,4 +1,4 @@
-require('dotenv').config({ path: './src/Config/.env' });
+require('dotenv').config({ path: './src/config/.env' });
 const jwt = require('jsonwebtoken');
 const pacienteServico = require('./pacienteService');
 

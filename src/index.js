@@ -1,10 +1,10 @@
 const express = require("express");
 const cors = require('cors');
 
-const routes = require('./Routes/pacienteRota');
-const routes2 = require('./Routes/vacinaRota');
-const Authroutes = require("./Routes/authRota");
-const connectDB = require("./Infra/database");
+const routes = require('./routes/pacienteRota');
+const routes2 = require('./routes/vacinaRota');
+const Authroutes = require("./routes/authRota");
+const connectDB = require("./infra/database");
 
 connectDB();
 

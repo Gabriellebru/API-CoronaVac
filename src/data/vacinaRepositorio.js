@@ -1,4 +1,4 @@
-const vacinaRepositorio = require('../models/Vacina');
+const vacinaRepositorio = require('../models/vacina');
 
 module.exports.buscaSolicitacoesVacina = async function () {
     return await vacinaRepositorio.find();

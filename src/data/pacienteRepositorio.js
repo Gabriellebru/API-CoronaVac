@@ -1,4 +1,4 @@
-const pacienteRepositorio = require('../models/Paciente.js');
+const pacienteRepositorio = require('../models/paciente.js');
 
 //ok
 module.exports.buscaPacientePorEmail = async function (email) {

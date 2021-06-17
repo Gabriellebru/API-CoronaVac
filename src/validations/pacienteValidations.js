@@ -1,6 +1,6 @@
 const { body, validationResult } = require("express-validator");
-const { validarCPF } = require("../Validations/cpfValidations");
-const pacienteServico = require("../Services/pacienteService");
+const { validarCPF } = require("../validations/cpfValidations");
+const pacienteServico = require("../services/pacienteService");
 
 const PacienteCadastroRules = () => {
   return [
