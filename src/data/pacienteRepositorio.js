@@ -1,4 +1,5 @@
 const pacienteRepositorio = require('../models/paciente.js');
+const calculadoraImc = require('../util/imc.js')
 
 //ok
 module.exports.buscaPacientePorEmail = async function (email) {
@@ -12,6 +13,10 @@ module.exports.insereUsuario = async function (novoUsuario) {
         nome, email, senha
     });
     return retornoUsuario;
+}
+
+module.exports.removeUsuario = async function (email) {
+    return await pacienteRepositorio.deleteOne({ email })
 }
 
 
@@ -31,19 +36,54 @@ module.exports.inserePaciente = async function (novoPaciente) {
     });
     return retornoPaciente;
 }
+module.exports.atualizaSenha = async function (Login) {
+    const { email, senha } = Login;
+    await pacienteRepositorio.updateOne(
+        {
+            email
+        },
+        {
+            $set: { senha }
+        }
+    );
+    return true;
+}
 
 module.exports.atualizaPaciente = async function (atualizaPaciente) {
-    const { nome, cpf, altura, peso, imc, classificacao, dataNascimento, cidade, UF, listaComorbidades, JaTeveCovid, email, senha } = atualizaPaciente;
+    const {
+        email,
+        cpf,
+        altura,
+        peso,
+        dataNascimento,
+        cidade,
+        UF,
+        listaComorbidades,
+        JaTeveCovid,
+        imc = calculadoraImc.imc(peso, altura),
+        classificacao = calculadoraImc.classificacao(calculadoraImc.imc(peso, altura))
+    } = atualizaPaciente;
+
     const PacienteAtualizado = await pacienteRepositorio.updateOne(
-        { cpf, altura, peso, imc, classificacao, dataNascimento, cidade, UF, listaComorbidades, JaTeveCovid, email, senha },
+        { email },
         {
             $set:
             {
-                nome
+                email,
+                cpf,
+                altura,
+                peso,
+                dataNascimento,
+                cidade,
+                UF,
+                listaComorbidades,
+                JaTeveCovid,
+                imc,
+                classificacao
             }
         }
     );
-    return PacienteAtualizado;
+    return true;
 }
 
 module.exports.removePaciente = async function (cpf) {

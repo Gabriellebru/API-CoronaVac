@@ -2,7 +2,7 @@ const { Router, request } = require('express');
 const pacienteServico = require('../services/pacienteService.js');
 const autenticacaoJWT = require('../services/authService.js');
 const { validate } = require('../validations/validations.js');
-const { PacienteValidationRules, PacienteCadastroRules } = require('../validations/pacienteValidations.js');
+const { PacienteValidationRules, PacienteCadastroRules, CompletaCadastroValidationRules } = require('../validations/pacienteValidations.js');
 
 const routes = Router();
 
@@ -18,13 +18,72 @@ routes.post(
     };
 
     const pacienteRetorno = await pacienteServico.buscaPacientePorEmail(email);
-
     if (pacienteRetorno != null && pacienteRetorno.length != 0 && pacienteRetorno.email == Login.email && pacienteRetorno.senha == Login.senha) {
-      return response.status(200).json({ "auth": true, pacienteRetorno });
+      if (
+        pacienteRetorno.cpf != undefined &&
+        pacienteRetorno.cidade != undefined &&
+        pacienteRetorno.peso != undefined &&
+        pacienteRetorno.altura != undefined &&
+        pacienteRetorno.dataNascimento != undefined &&
+        pacienteRetorno.UF != undefined &&
+        pacienteRetorno.listaComorbidades != undefined &&
+        pacienteRetorno.JaTeveCovid != undefined
+      ) {
+        return response.status(200).json({ "auth": true, "needMoreInfo": false, pacienteRetorno })
+      }
+      else {
+        return response.status(200).json({ "auth": true, "needMoreInfo": true, pacienteRetorno });
+      }
     }
     return response.status(401).json({ ERROR: "Login incorreto" });
   }
 );
+
+
+routes.delete("/DeletarUsuario/:email", async (request, response) => {
+  const { email } = request.params;
+  const pacienteRetorno = await pacienteServico.removeUsuario(email);
+  if (!pacienteRetorno) {
+    return response.status(404).json({ error: "usuario não encontrado!!" });
+  }
+  return response.status(200).json({ Message: `usuario ${email} removido` });
+}
+);
+
+
+routes.post('/AtualizaCadastro', CompletaCadastroValidationRules(), validate, async (request, response) => {
+  const {
+    email,
+    cpf,
+    peso,
+    altura,
+    dataNascimento,
+    cidade,
+    UF,
+    listaComorbidades,
+    JaTeveCovid
+  } = request.body
+
+  const Login = {
+    email,
+    cpf,
+    peso,
+    altura,
+    dataNascimento,
+    cidade,
+    UF,
+    listaComorbidades,
+    JaTeveCovid
+  }
+
+  const Atualizado = await pacienteServico.atualizaPaciente(Login)
+  if (Atualizado) {
+    return response.status(200).json({ "atualizado": true, "Mensagem": "Atualizado" })
+  } else {
+    return response.status(404).json({ "atualizado": false, "Mensagem": "Paciente não encontrado" })
+  }
+
+})
 
 //Metodo para cadastro inicial
 //ok
@@ -42,6 +101,20 @@ routes.post(
     return response.status(201).json({ "auth": true, usuarioRetorno });
   }
 );
+
+//Metodo para redefinir senha no Login
+
+routes.put("/RedefinirSenha", async (request, response) => {
+  const { email, senha } = request.body;
+  const redefinida = await pacienteServico.RedefinirSenha(email, senha)
+  if (redefinida) {
+    return response.status(200).json({ "Mensagem": "Senha alterada com sucesso" });
+  }
+  else {
+    return response.status(404).json({ "Mensagem": "Email não encontrado" });
+  }
+
+});
 
 
 routes.get("/", async (request, response) => {
@@ -81,34 +154,34 @@ routes.post(
   }
 );
 
-routes.put("/:cpf", async (request, response) => {
-  const { cpf } = request.params;
-  const {
-    nome, altura, peso, dataNascimento, cidade, UF, listaComorbidades, JaTeveCovid,
-  } = request.body;
-  const pacienteAtualizar = {
-    nome, cpf, nome, altura, peso, dataNascimento, cidade, UF, listaComorbidades, JaTeveCovid, email, senha,
-  };
-  const pacienteRetorno = await pacienteServico.atualizaPaciente(
-    pacienteAtualizar
-  );
-  if (!pacienteRetorno) {
-    return response.status(404).json({ error: "Paciente não encontado!" });
-  }
-  return response.status(200).json({ ok: "Paciente Atualizado!" });
-});
+// routes.put("/:cpf", async (request, response) => {
+//   const { cpf } = request.params;
+//   const {
+//     nome, altura, peso, dataNascimento, cidade, UF, listaComorbidades, JaTeveCovid,
+//   } = request.body;
+//   const pacienteAtualizar = {
+//     nome, cpf, nome, altura, peso, dataNascimento, cidade, UF, listaComorbidades, JaTeveCovid, email, senha,
+//   };
+//   const pacienteRetorno = await pacienteServico.atualizaPaciente(
+//     pacienteAtualizar
+//   );
+//   if (!pacienteRetorno) {
+//     return response.status(404).json({ error: "Paciente não encontado!" });
+//   }
+//   return response.status(200).json({ ok: "Paciente Atualizado!" });
+// });
 
-routes.delete(
-  "/:cpf",
-  autenticacaoJWT.verificarToken,
-  async (request, response) => {
-    const { cpf } = request.params;
-    const pacienteRetorno = await pacienteServico.removePaciente(cpf);
-    if (!pacienteRetorno) {
-      return response.status(404).json({ error: "Paciente não encontrado!!" });
-    }
-    return response.status(200).json({ Message: `Paciente ${cpf} removido` });
-  }
-);
+// routes.delete(
+//   "/:cpf",
+//   autenticacaoJWT.verificarToken,
+//   async (request, response) => {
+//     const { cpf } = request.params;
+//     const pacienteRetorno = await pacienteServico.removePaciente(cpf);
+//     if (!pacienteRetorno) {
+//       return response.status(404).json({ error: "Paciente não encontrado!!" });
+//     }
+//     return response.status(200).json({ Message: `Paciente ${cpf} removido` });
+//   }
+// );
 
 module.exports = routes;

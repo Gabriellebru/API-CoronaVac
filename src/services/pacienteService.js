@@ -1,6 +1,31 @@
 const pacienteRepositorio = require('../data/pacienteRepositorio.js');
 const calculadoraImc = require('../util/imc');
 
+module.exports.RedefinirSenha = async function (email, senha) {
+  const login = await pacienteRepositorio.buscaPacientePorEmail(email);
+  if (login != null && login.email != undefined) {
+    login.senha = senha
+    return await pacienteRepositorio.atualizaSenha(login)
+  }
+  else {
+    return false;
+  }
+}
+
+module.exports.removeUsuario = async function (email) {
+  const pacienteRetorno = await pacienteRepositorio.buscaPacientePorEmail(email);
+  if (pacienteRetorno != null && pacienteRetorno.length == 0) {
+    return false;
+  }
+  await pacienteRepositorio.removeUsuario(email)
+  const retorno = await pacienteRepositorio.buscaPacientePorEmail(email);
+  return true
+}
+
+
+
+
+
 //ok
 module.exports.buscaPacientePorEmail = async function (email) {
   return await pacienteRepositorio.buscaPacientePorEmail(email);
@@ -14,6 +39,20 @@ module.exports.cadastraUsuario = async function (novoUsuario) {
   }
   return null
 };
+
+// module.exports.atualizaPaciente = async function (atualizaPaciente) {
+//   const pacienteRetorno = await pacienteRepositorio.buscaPacientePorEmail(
+//     atualizaPaciente.email
+//   );
+//   if (pacienteRetorno.length == 0) {
+//     return false;
+//   }
+
+//   const resultadoPaciente = await pacienteRepositorio.atualizaPaciente(
+//     atualizaPaciente
+//   );
+//   return true;
+// };
 
 
 //#region Antigo
@@ -42,16 +81,13 @@ module.exports.inserePaciente = async function (novoPaciente) {
 };
 
 module.exports.atualizaPaciente = async function (atualizaPaciente) {
-  const pacienteRetorno = await pacienteRepositorio.buscaPacientePorCpf(
-    atualizaPaciente.cpf
+  const pacienteRetorno = await pacienteRepositorio.buscaPacientePorEmail(
+    atualizaPaciente.email
   );
   if (pacienteRetorno.length == 0) {
     return false;
   }
-
-  const resultadoPaciente = await pacienteRepositorio.atualizaPaciente(
-    atualizaPaciente
-  );
+  const resultadoPaciente = await pacienteRepositorio.atualizaPaciente(atualizaPaciente);
   return true;
 };
 

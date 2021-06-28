@@ -9,10 +9,6 @@ const PacienteCadastroRules = () => {
       .withMessage("Nome é obrigatório"),
 
     body("email")
-      .notEmpty()
-      .withMessage("Email obrigatorio"),
-
-    body("email")
       .custom(async (value) => {
         const resultadoPaciente = await pacienteServico.buscaPacientePorEmail(value);
         if (resultadoPaciente != null) {
@@ -90,7 +86,34 @@ const PacienteValidationRules = () => {
   ];
 };
 
+const CompletaCadastroValidationRules = () => {
+  const errors = [
+    body("cpf")
+      .custom((value) => {
+        if (!validarCPF(value)) throw new Error("CPF é inválido!");
+        return true;
+      })
+      .withMessage("CPF: inválido"),
+
+    body("peso").isLength({ min: 1, max: Infinity }).withMessage("Peso: inválido"),
+
+    body("altura").isLength({ min: 1, max: Infinity }).withMessage("Altura: inválido"),
+
+    body("dataNascimento").notEmpty().withMessage("Data de nascimento: obrigatório"),
+
+    body("cidade").notEmpty().withMessage("Cidade: obrigatório"),
+
+    body("UF").notEmpty().withMessage("UF: obrigatório"),
+
+    body("listaComorbidades").notEmpty().withMessage("Comorbidades: obrigatório"),
+
+    body("JaTeveCovid").notEmpty().withMessage("Covid: obrigatório")
+  ]
+  return errors
+}
+
 module.exports = {
   PacienteValidationRules,
-  PacienteCadastroRules
+  PacienteCadastroRules,
+  CompletaCadastroValidationRules
 };
