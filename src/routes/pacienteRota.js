@@ -2,7 +2,12 @@ const { Router, request } = require('express');
 const pacienteServico = require('../services/pacienteService.js');
 const autenticacaoJWT = require('../services/authService.js');
 const { validate } = require('../validations/validations.js');
-const { PacienteValidationRules, PacienteCadastroRules, CompletaCadastroValidationRules } = require('../validations/pacienteValidations.js');
+const {
+  PacienteValidationRules,
+  PacienteCadastroRules,
+  CompletaCadastroValidationRules,
+  RedefinirSenhaValidationRules
+} = require('../validations/pacienteValidations.js');
 
 const routes = Router();
 
@@ -104,7 +109,7 @@ routes.post(
 
 //Metodo para redefinir senha no Login
 
-routes.put("/RedefinirSenha", async (request, response) => {
+routes.put("/RedefinirSenha", RedefinirSenhaValidationRules(), validate, async (request, response) => {
   const { email, senha } = request.body;
   const redefinida = await pacienteServico.RedefinirSenha(email, senha)
   if (redefinida) {

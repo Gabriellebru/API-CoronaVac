@@ -23,9 +23,6 @@ module.exports.removeUsuario = async function (email) {
 }
 
 
-
-
-
 //ok
 module.exports.buscaPacientePorEmail = async function (email) {
   return await pacienteRepositorio.buscaPacientePorEmail(email);

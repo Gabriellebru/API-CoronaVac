@@ -25,6 +25,8 @@ const PacienteCadastroRules = () => {
     body("senha")
       .notEmpty()
       .withMessage("Senha obrigatória")
+      .isLength({ min: 6, max: 30 })
+      .withMessage("Senha mínima de 6 caracteres")
   ]
 }
 
@@ -112,7 +114,29 @@ const CompletaCadastroValidationRules = () => {
   return errors
 }
 
+const RedefinirSenhaValidationRules = () => {
+  const errors = [
+    body("email").custom(async (email) => {
+      const cadastro = await pacienteServico.buscaPacientePorEmail(email);
+      if (cadastro == null || cadastro.email == undefined) {
+        throw new Error("Email inexistente")
+      }
+      else {
+        return true
+      }
+    }).withMessage("Email inexistente/inválido"),
+
+    body("senha")
+      .notEmpty()
+      .withMessage("Senha é obrigatória")
+      .isLength({ min: 6, max: 30 })
+      .withMessage("Senha mínima de 6 caracteres")
+  ]
+  return errors
+}
+
 module.exports = {
+  RedefinirSenhaValidationRules,
   PacienteValidationRules,
   PacienteCadastroRules,
   CompletaCadastroValidationRules
