@@ -12,12 +12,12 @@ module.exports.RedefinirSenha = async function (email, senha) {
   }
 }
 
-module.exports.removeUsuario = async function (email) {
+module.exports.remove = async function (email) {
   const pacienteRetorno = await pacienteRepositorio.buscaPacientePorEmail(email);
   if (pacienteRetorno != null && pacienteRetorno.length == 0) {
     return false;
   }
-  await pacienteRepositorio.removeUsuario(email)
+  await pacienteRepositorio.remove(email)
   const retorno = await pacienteRepositorio.buscaPacientePorEmail(email);
   return true
 }
