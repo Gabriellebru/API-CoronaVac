@@ -90,8 +90,6 @@ routes.post('/AtualizaCadastro', CompletaCadastroValidationRules(), validate, as
 
 })
 
-//Metodo para cadastro 
-//ok
 routes.post(
   "/Cadastro",
   PacienteCadastroRules(),
@@ -106,8 +104,6 @@ routes.post(
     return response.status(201).json({ "auth": true, usuarioRetorno });
   }
 );
-
-//Metodo para redefinir senha 
 
 routes.put("/RedefinirSenha", RedefinirSenhaValidationRules(), validate, async (request, response) => {
   const { email, senha } = request.body;
