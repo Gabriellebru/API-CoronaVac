@@ -90,7 +90,7 @@ routes.post('/AtualizaCadastro', CompletaCadastroValidationRules(), validate, as
 
 })
 
-//Metodo para cadastro inicial
+//Metodo para cadastro 
 //ok
 routes.post(
   "/Cadastro",
@@ -107,7 +107,7 @@ routes.post(
   }
 );
 
-//Metodo para redefinir senha no Login
+//Metodo para redefinir senha 
 
 routes.put("/RedefinirSenha", RedefinirSenhaValidationRules(), validate, async (request, response) => {
   const { email, senha } = request.body;
